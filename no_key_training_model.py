@@ -1,4 +1,5 @@
 import os
+import pickle
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -10,7 +11,7 @@ from sklearn.utils.class_weight import compute_class_weight
 from keras.preprocessing.sequence import pad_sequences
 
 # Load the dataset
-file_path = r"/content/ciphertext_dataset_testing.csv"
+file_path = r"/content/ciphertext_dataset_training.csv"
 data = pd.read_csv(file_path)
 
 # Ensure 'Ciphertext' column exists and remove spaces in the ciphertext
@@ -55,6 +56,13 @@ class_weights_dict = dict(enumerate(class_weights))
 # Initialize and train the Random Forest Classifier
 rf_model = RandomForestClassifier(n_estimators=200, max_depth=30, class_weight=class_weights_dict, random_state=42)
 rf_model.fit(X_train, y_train)
+
+# Save the trained model and label encoder as pickle files
+with open('rf_model.pkl', 'wb') as model_file:
+    pickle.dump(rf_model, model_file)
+
+with open('label_encoder.pkl', 'wb') as encoder_file:
+    pickle.dump(label_encoder, encoder_file)
 
 # Predict on the test set
 y_pred = rf_model.predict(X_test)
